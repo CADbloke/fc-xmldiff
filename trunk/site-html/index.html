@@ -22,6 +22,18 @@ Proceedings of ACM DocEng 2006.
 <p>The source code for the tool is released under the permissive
   <a href="http://en.wikipedia.org/wiki/MIT_License">MIT license</a></p>
 
+<h2>News</h2>
+<ul>
+<li>March 25, 2009: Improved output of namespace prefixes by moving
+them to the root node. Also, the XAS parser now supports setting
+the text buffer size with the <code>org.kxml2.io.textbuffer</code> property.
+Try this if you are getting parse errors on documents with large
+attributes. Note: you'll need to build the fc-xas project 
+and replace <code>trunk/java/xmldiff/contrib/fc-xas-0.1.0.jar</code> with the
+generated <code>fc-xas.jar</code> in order to pick up the text buffer size.
+
+</ul>
+
 <h2>Installation from Source</h2>
 
 <p>At this point, we only provide source-based installation from the
@@ -75,7 +87,8 @@ ant -Dbase=old.xml -Ddiff=diff.xml -Dnew=new.xml patch
 </pre>
 As in the previous case, direct invocation can also be used. In this case
 the main class is <code>fc.xml.diff.Patch</code>
+
 <hr>
-Last update <i>$Id:$</i>
+Last update <i>$Id$</i>
 </body>
 </html>
