@@ -1,0 +1,1 @@
+scp index.html hoslab.cs.helsinki.fi:/home/homepages/fc-xmldiff
