@@ -17,12 +17,15 @@ import java.util.List;
 
 import fc.xml.diff.Segment;
 import fc.xml.xas.Item;
+import fc.xml.xas.ItemTransform;
 
 public interface DiffEncoder {
 
   public void encodeDiff(List<Item> base, List<Item> doc,
       List<Segment<Item>> matches, List<Item> preamble, OutputStream out)
       throws IOException;
+  
+  public void setOutputFilters(ItemTransform... t);
 
 }
 // arch-tag: 3eaf5e57-ee9d-46a5-aff7-14214b9e5776

@@ -22,8 +22,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
 import org.xmlpull.v1.XmlPullParser;
 
@@ -37,7 +41,11 @@ import fc.xml.diff.encode.XmlDiffEncoder;
 import fc.xml.xas.Item;
 import fc.xml.xas.ItemSource;
 import fc.xml.xas.ItemTransform;
+import fc.xml.xas.PrefixNode;
+import fc.xml.xas.StartTag;
+import fc.xml.xas.TransformSource;
 import fc.xml.xas.transform.DataItems;
+import fc.xml.xas.transform.NsPrefixFixer;
 
 public class Diff {
 
@@ -106,9 +114,9 @@ public class Diff {
   }
 
   // Returns true if bases and docs differ
-  public static boolean diff(ItemSource baseEs,
+  public static boolean diff(ItemSource rawBaseEs,
                              XmlPullParser baseParser,
-                             ItemSource docEs,
+                             ItemSource rawDocEs,
                              XmlPullParser docParser,
                              OutputStream dout,
                              Class<DiffEncoder> outputEncoding,
@@ -120,6 +128,9 @@ public class Diff {
                                      new ArrayList<Integer>();
     ArrayList<Integer> posListNew = docParser == null ? null :
                                     new ArrayList<Integer>();
+    NsPrefixGrabber prefixes = new NsPrefixGrabber();
+    ItemSource baseEs = new TransformSource(rawBaseEs, prefixes);
+    ItemSource docEs = new TransformSource(rawDocEs, prefixes);
     List<Item> preamble = new ArrayList<Item>();
     List<Item> base =
       IoUtil.makeEventList(baseEs,preamble, posListBase, baseParser);
@@ -134,6 +145,13 @@ public class Diff {
     try {
       DiffEncoder enc = outputEncoding.newInstance();
       if( dout != null && !isEmpty || emitEmpty ) {
+        if (!prefixes.isNeuroticXML()) {
+          NsPrefixInRootAdder prefixAdder = new NsPrefixInRootAdder();
+          prefixAdder.addRootPrefixes(prefixes.getPrefixes());
+          enc.setOutputFilters(prefixAdder, new NsPrefixFixer());          
+        } else {
+          enc.setOutputFilters(new NsPrefixFixer());
+        }
         enc.encodeDiff(base, doc, ml, preamble, dout);
       }
     } catch (IllegalAccessException e) {
@@ -173,4 +191,82 @@ public class Diff {
         dout,outputEncoding,encoderOptions,emitEmpty);
   }
 
+  static class NsPrefixGrabber implements ItemTransform {
+
+	// Map prefix -> URI
+	private Map<String,String> prefixes = new LinkedHashMap<String,String>();
+	protected Queue<Item> queue = new LinkedList<Item>();
+    // Set to true if namespcae prefix is not unqiue identifier for
+    // namespace uri (e.g. "html" maps to two different HTML namespaces)
+    // see http://lists.xml.org/archives/xml-dev/200204/msg00170.html
+    
+	protected boolean isNeuroticXML = false;
+    
+	public void append(Item i) throws IOException {
+	  if (Item.isStartTag(i)) {
+        StartTag st = (StartTag) i;
+	    for( Iterator<PrefixNode> pi = st.localPrefixes(); pi.hasNext(); ) {
+	      PrefixNode p = pi.next();
+          String uri = prefixes.get(p.getPrefix());
+          if (uri == null) {
+            prefixes.put(p.getPrefix(), p.getNamespace());
+          } else if (!isNeuroticXML && !uri.equals(p.getNamespace())) {
+            Log.warning("Prefix " + p.getPrefix() + " is mapped to both " +
+                uri + " and " + p.getNamespace() + ". Cannot put all prefix " +
+                "mappings in the root tag");
+            isNeuroticXML = true;
+          }
+	    }
+	  }
+	  queue.offer(i);
+	}
+
+	public boolean hasItems() {
+	  return !queue.isEmpty();
+	}
+
+	public Item next() throws IOException {
+	  return queue.poll();
+	}
+
+    public boolean isNeuroticXML() {
+      return isNeuroticXML;
+    }
+    
+    public Map<String, String> getPrefixes() {
+      return prefixes;
+    }
+        
+  }
+  
+  static class NsPrefixInRootAdder implements ItemTransform {
+
+    // Map prefix -> URI
+    private Map<String,String> prefixes = new LinkedHashMap<String,String>();
+    protected Queue<Item> queue = new LinkedList<Item>();
+    protected boolean firstTagSeen = false;
+    
+    public void append(Item i) throws IOException {
+      if (!firstTagSeen && Item.isStartTag(i)) {
+        StartTag st = (StartTag) i;
+        for (Map.Entry<String,String> prefix : prefixes.entrySet()) {
+          st.ensurePrefix(prefix.getValue(), prefix.getKey());
+        }
+        firstTagSeen = true;
+      }
+      queue.offer(i);
+    }
+
+    public boolean hasItems() {
+      return !queue.isEmpty();
+    }
+
+    public Item next() throws IOException {
+      return queue.poll();
+    }
+    
+    public void addRootPrefixes(Map<String,String> morePrefixes) {
+      prefixes.putAll(morePrefixes);
+    }
+  }
 }

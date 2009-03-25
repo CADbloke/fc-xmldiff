@@ -28,6 +28,7 @@ import fc.xml.xas.Item;
 import fc.xml.xas.ItemList;
 import fc.xml.xas.ItemSource;
 import fc.xml.xas.ItemTarget;
+import fc.xml.xas.ItemTransform;
 import fc.xml.xas.StartDocument;
 import fc.xml.xas.TransformSource;
 import fc.xml.xas.XasUtil;
@@ -39,6 +40,8 @@ import fc.xml.xmlr.model.StringKey;
 import fc.xml.xmlr.xas.RefItem;
 
 public class RefTreeEncoder implements DiffEncoder {
+  
+  protected ItemTransform[] outputTransforms = {new NsPrefixFixer()};
   
   public RefTreeEncoder() {
     
@@ -79,7 +82,10 @@ public class RefTreeEncoder implements DiffEncoder {
   }
 
   protected ItemSource getOuputTransform(ItemSource is) {
-    return new TransformSource( is, new NsPrefixFixer() );
+    for (ItemTransform t : outputTransforms) {
+      is = new TransformSource(is, t);
+    }
+    return is;
   }
 
   // Assume at ST
@@ -262,6 +268,10 @@ public class RefTreeEncoder implements DiffEncoder {
     type == Item.PI;
   }
 
+  public void setOutputFilters(ItemTransform... t) {
+    outputTransforms = t;
+  }
+
   public static class NumericXPath {
   
     private static final int MAXDEPTH=128;
@@ -361,6 +371,7 @@ public class RefTreeEncoder implements DiffEncoder {
   
     }
   }
+
 }
 // arch-tag: 6763904d-6168-434d-bf62-77d9f9913eb4
 //

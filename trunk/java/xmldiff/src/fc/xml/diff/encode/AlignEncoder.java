@@ -23,6 +23,7 @@ import fc.util.StringUtil;
 import fc.util.Util;
 import fc.xml.diff.Segment;
 import fc.xml.xas.Item;
+import fc.xml.xas.ItemTransform;
 
 public class AlignEncoder implements DiffEncoder {
 
@@ -109,6 +110,10 @@ public class AlignEncoder implements DiffEncoder {
   }
 
   public static final PosTransformer DEFAULT_PT = new DefaultPosTranformer();
+
+  public void setOutputFilters(ItemTransform... t) {
+    // NOP (Has no effect)
+  }
 
 
 }
