@@ -22,7 +22,6 @@ import fc.xml.xas.ItemSource;
 import fc.xml.xas.ItemTransform;
 import fc.xml.xas.StartTag;
 import fc.xml.xas.TransformSource;
-import fc.xml.xas.transform.NsPrefixFixer;
 import fc.xml.xmlr.NodeReference;
 import fc.xml.xmlr.model.StringKey;
 import fc.xml.xmlr.xas.RefItem;
@@ -32,8 +31,8 @@ import fc.xml.xmlr.xas.RefTreeItem;
 public class XmlDiffEncoder extends RefTreeEncoder {
 
   protected ItemSource getOuputTransform(ItemSource is) {
-    return new TransformSource(
-        new TransformSource( is, new RefEStoDiffES() ), new NsPrefixFixer() );
+    is = new TransformSource( is, new RefEStoDiffES() );
+    return super.getOuputTransform(is);
   }
 
   /** ReferenceEs to Diff es. The input es ids are assumed to be absolute
@@ -94,7 +93,8 @@ public class XmlDiffEncoder extends RefTreeEncoder {
           // FIXME-20061113-2: Namespace prefixes
           rootTag = new StartTag(fc.xml.xmlr.tdm.Diff.DIFF_ROOT_TAG);
           rootTag.ensurePrefix(fc.xml.xmlr.tdm.Diff.DIFF_NS,
-            fc.xml.xmlr.tdm.Diff.DIFF_NS_PREFIX);
+              fc.xml.xmlr.tdm.Diff.DIFF_NS_PREFIX);
+          rootTag.ensurePrefix(fc.xml.xmlr.xas.RefItem.REF_NS, "ref");
           //
           rootTag.addAttribute(fc.xml.xmlr.tdm.Diff.DIFF_ROOTOP_ATTR, 
               fc.xml.xmlr.tdm.Diff.DIFF_ROOTOP_INS);
@@ -115,7 +115,7 @@ public class XmlDiffEncoder extends RefTreeEncoder {
             queue.add(RefItem.makeStartItem(
                 new NodeReference( StringKey.createKey( 
                     getRelativePath(parentPaths.
-                    peek(), ni.getTarget().toString()))),null /*ni.getContext()*/));
+                    peek(), ni.getTarget().toString()))),ni.getContext()));
             String longPath = ni.getTarget().toString();
             parentPaths.push(longPath);
           } else {  

@@ -47,6 +47,7 @@ license with the distribution, write to the Fuego Core project at
 	<path refid="classpath.contrib.se" />
       </classpath>
       <syspropertyset refid="faxma-properties" />
+      <sysproperty key="org.kxml2.io.textbuffer" value="131072" />
     </java>
   </target>
 
