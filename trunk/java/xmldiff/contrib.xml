@@ -69,7 +69,7 @@ checking its hash, and then unpacking to ${src}
 
     <!-- junit -->
     <wget id="junit"
-          href1="http://${sourceforge}/sourceforge/junit/junit3.8.1.zip"
+          href1="http://${sourceforge}/junit/junit3.8.1.zip"
           target="${lib}/junit-3.8.1.jar"
           target.get="${temp.file}"
           unpack1="unpack-zip"
