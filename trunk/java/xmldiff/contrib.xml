@@ -45,7 +45,7 @@ checking its hash, and then unpacking to ${src}
   <!-- Default soureforge mirror -->
   <property name="sf-mirror" value="switch" />
   <property name="sourceforge" 
-    value="${sf-mirror}.dl.sourceforge.net/sourceforge" />
+    value="${sf-mirror}.dl.sourceforge.net" />
 
   <import file="../contrib-helper.xml" />
 
@@ -78,20 +78,20 @@ checking its hash, and then unpacking to ${src}
 
     <!-- FC Util -->
     <wget id="fc-util"
-	  href1="http://hoslab.cs.helsinki.fi/downloads/fc-util/fc-util-0.1.0.jar"
+	  href1="http://fc-util.googlecode.com/files/fc-util-0.1.0.jar"
 	  target="${llib}/fc-util-0.1.0.jar"
 	  sha = "6c8b6e8c3801c0cc672c421a994f5ddb04be46f5" />
 
     <!-- FC XAS -->
     <wget id="fc-xas"
-	  href1="http://hoslab.cs.helsinki.fi/downloads/fc-xas/fc-xas-0.1.0.jar"
+	  href1="http://fc-xas.googlecode.com/files/fc-xas-0.1.0.jar"
 	  target="${llib}/fc-xas-0.1.0.jar"
 	  sha = "4288fc78591e0fe8e240701607b4fd6fb7cbdef6" />
 
 
     <!-- FC RAXS -->
     <wget id="fc-raxs"
-	  href1="http://hoslab.cs.helsinki.fi/downloads/fc-raxs/fc-raxs-0.1.0.jar"
+	  href1="http://fc-raxs.googlecode.com/files/fc-raxs-0.1.0.jar"
 	  target="${llib}/fc-raxs-0.1.0.jar"
 	  sha = "e8bcf2b134d97ce86ce82b27cae6e65ab9cb7f96" />
 
