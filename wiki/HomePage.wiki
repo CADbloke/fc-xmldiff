@@ -3,7 +3,9 @@
 The Fuego Core XML Diff and Patch tool is a fast and memory-efficient general-purpose tool for diffing and patching XML files. The underlying algorithms have been described in _T. Lindholm, J. Kangasharju, and S. Tarkoma: Fast and Simple XML Tree Differencing by Sequence Alignment, Proceedings of ACM DocEng 2006_. [http://doi.acm.org/10.1145/1166160.1166183 acm.org] [http://www.hiit.fi/files/fi/fc/papers/doceng06-pc.pdf hiit.fi].
 
 The source code for the tool is released under the permissive MIT license
-News
+
+
+==News==
 
   * June 26, 2009: Project reincarnated at code.google.com after hoslab.cs.helsinki.fi was shut down
 
@@ -49,7 +51,7 @@ java -Djava.ext.dirs=../contrib/jar:contrib -cp =build/lib/xmldiff.jar fc.xml.di
 
 ==Patching XML==
 
-As for diffing, their is an Ant target for patching. To patch `old.xml` with `diff.xml` to get `new.xml`, you run
+As for diffing, there is an Ant target for patching. To patch `old.xml` with `diff.xml` to get `new.xml`, you run
 
 {{{
 ant -Dbase=old.xml -Ddiff=diff.xml -Dnew=new.xml patch
